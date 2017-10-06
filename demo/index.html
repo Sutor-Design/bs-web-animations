@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Visual Tests for Web Animation API</title>
+  <link rel="stylesheet" href="./index.css">
+  <script src="../lib/js/src/animation_test.js" async></script>
+  <script src="./animation_test_js.js" async></script>
+</head>
+<body>
+  <header class="atest__site-header">
+    <h1 class="atest__site-header-title">Visual test suite for Reason bindings to the native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API">Web Animations API</a></h1>
+    <p class="atest__site-header-note"><small>Native support is currently limited. Basic support exists in Chrome from version 36.0, and in Firefox from version 48.0 - note that some features may need to be enabled in <i>about:config</i> in these browsers. A robust polyfill <a target="_blank" href="https://github.com/web-animations/web-animations-js">is available</a>.</small></p>
+    <p class="atest__site-header-note"><small>Animations in left column (Reason API) should exactly match those in the right column (JS API).</small></p>
+  </header>
+  <main class="atest__comparison">
+    <!-- Test 1 -->
+    <article class="atest atest--reason">
+      <figure id="atestReason01" class="atest__anim atest__anim--reason">
+        <div id="atestReasonEl01" class="atest__el atest__el--circle">
+        </div>
+      </figure>
+      <div class="atest__desc">
+      </div>
+    </article>
+
+
+    <article class="atest atest--js">
+      <figure id="atestJS01" class="atest__anim atest__anim--js">
+        <div id="atestJSEl01" class="atest__el atest__el--circle">
+        </div>
+      </figure>
+      <div class="atest__desc">
+      </div>
+    </article>
+
+    <!-- Test 2 -->
+    <article class="atest atest--reason">
+      <figure id="atestReason02" class="atest__anim atest__anim--reason">
+        <div id="atestReasonEl02" class="atest__el atest__el--circle">
+        </div>
+      </figure>
+      <div class="atest__desc">
+      </div>
+    </article>
+
+    <article class="atest atest--js">
+      <figure id="atestJS02" class="atest__anim atest__anim--js">
+        <div id="atestJSEl02" class="atest__el atest__el--circle">
+        </div>
+      </figure>
+    </article>
+    <div class="atest__desc">
+    </div>
+  </main>
+</body>
+</html>

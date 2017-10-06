@@ -1,0 +1,5 @@
+{
+  "name": "bs-web-animations",
+  "sources": ["src"],
+  "bsc-flags": ["-bs-super-errors"]
+}
