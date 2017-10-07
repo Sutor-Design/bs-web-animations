@@ -1,5 +1,6 @@
 {
   "name": "bs-web-animations",
   "sources": ["src"],
+  "bs-dependencies": ["bs-fetch"],
   "bsc-flags": ["-bs-super-errors"]
 }

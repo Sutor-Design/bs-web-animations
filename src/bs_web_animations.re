@@ -91,21 +91,13 @@ let encodeFillType fill =>
 
 module KeyframeOptions = {
   type t = keyframeOptions;
-  let unwrapFill (fill: fillType) => encodeFillType fill;
   external make :
     delay::int? =>
     /* Whether the animation runs forwards (normal), backwards (reverse),
      * switches direction after each iteration (alternate), or runs
      * backwards and switches direction after each iteration (alternate-reverse).
      * Defaults to "normal". */
-    direction::
-      [
-        | `Normal (string [@bs.as "normal"] [@bs.string])
-        | `Reverse (string [@bs.as "reverse"] [@bs.string])
-        | `Alternate (string [@bs.as "alternate"] [@bs.string])
-        | `AlternateReverse (string [@bs.as "alternate-reverse"] [@bs.string])
-      ]
-      [@bs.unwrap] =>
+    direction::string? =>
     /* The number of milliseconds each iteration of the animation takes to
      * complete. Defaults to 0. Although this is technically optional, keep
      * in mind that your animation will not run if this value is 0. */
@@ -114,15 +106,7 @@ module KeyframeOptions = {
      * the pre-defined values "linear", "ease", "ease-in", "ease-out",
      * and "ease-in-out", or a custom "cubic-bezier" value like
      * "cubic-bezier(0.42, 0, 0.58, 1)". Defaults to "linear". */
-    easing::
-      [
-        | `Linear (string [@bs.as "linear"] [@bs.string])
-        | `Ease (string [@bs.as "ease"] [@bs.string])
-        | `EaseIn (string [@bs.as "ease-in"] [@bs.string])
-        | `EaseOut (string [@bs.as "ease-out"] [@bs.string])
-        | `EaseInOut (string [@bs.as "ease-in-out"] [@bs.string])
-      ]
-      [@bs.unwrap]? =>
+    easing::string? =>
     /* The number of milliseconds to delay after the end of an animation.
      * This is primarily of use when sequencing animations based on the
      * end time of another animation. Defaults to 0. */
@@ -131,14 +115,7 @@ module KeyframeOptions = {
      * by the element(s) prior to playing ("backwards"), retained
      * after the animation has completed playing ("forwards"), or
      * both. Defaults to "none".*/
-    fill::
-      [
-        | `Forwards (string [@bs.as "forwards"] [@bs.string])
-        | `Backwards (string [@bs.as "backwards"] [@bs.string])
-        | `Both (string [@bs.as "both"] [@bs.string])
-        | `None (string [@bs.as "none"] [@bs.string])
-      ]
-      [@bs.unwrap]? =>
+    fill::string? =>
     /* Describes at what point in the iteration the animation should
      * start. 0.5 would indicate starting halfway through the first
      * iteration for example, and with this value set, an animation
@@ -152,6 +129,24 @@ module KeyframeOptions = {
     unit =>
     keyframeOptions =
     "" [@@bs.obj];
+  let make
+       delay::(delay: int)=0
+       direction::(direction: animationEffectTimingPlaybackDirection)=Normal
+       duration::(duration: int)=0
+       easing::(easing: easingType)=Linear
+       endDelay::(endDelay: int)=0
+       fill::(fill: fillType)=Forwards
+       iterationStart::(iterationStart: float)=0.0
+       iterations::(iterations: int)=1 =>
+     make
+       ::delay
+       direction::(encodeAnimationEffectTimingPlaybackDirection direction)
+       ::duration
+       easing::(encodeEasingType easing)
+       ::endDelay
+       fill::(encodeFillType fill)
+       ::iterationStart
+       ::iterations;
 };
 
 module KeyframeEffectInit = {

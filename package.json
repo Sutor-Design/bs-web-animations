@@ -11,9 +11,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "bs-fetch": "^0.2.0",
     "bs-platform": "^1.9.2"
   },
-  "dependencies": {
-    "flow-bin": "^0.56.0"
-  }
+  "dependencies": {}
 }
