@@ -17,33 +17,13 @@ type keyframeObject;
 
 type keyframeOptions;
 
-/* type animationTimingEffect =
-   | None
-   | Forwards
-   | Backwards
-   | Both
-   | Auto; */
-type animationEffectTimingPlaybackDirection =
-  | Normal
-  | Reverse
-  | Alternate
-  | AlternateReverse;
-
-let encodeAnimationEffectTimingPlaybackDirection dir =>
-  switch dir {
-  | Normal => "normal"
-  | Reverse => "reverse"
-  | Alternate => "alternate"
-  | AlternateReverse => "alternate-reverse"
-  };
-
-type animationPlayState =
+type playState =
   | Pending
   | Running
   | Paused
   | Finished;
 
-let encodeAnimationPlayState state =>
+let encodePlayState state =>
   switch state {
   | Pending => "pending"
   | Running => "running"
@@ -75,94 +55,30 @@ let encodeEasingType easing =>
     ", " ^ string_of_float f3 ^ ", " ^ string_of_float f4 ^ ")"
   };
 
-type fillType =
-  | Backwards
-  | Forwards
-  | Both
-  | None;
-
-let encodeFillType fill =>
-  switch fill {
-  | Backwards => "backwards"
-  | Forwards => "forwards"
-  | Both => "both"
-  | None => "none"
-  };
-
+/* IMPORTANT Only allows the second type of keyframe object - an array
+ * of objects (keyfames).
+ * NOTE just allowing anything in the object - too much hassle to
+ * typecheck atm. */
+/* module KeyframeObject = {
+     type t = keyframeObject;
+   }; */
 module KeyframeOptions = {
   type t = keyframeOptions;
-  external make :
+  external makeObj :
     delay::int? =>
-    /* Whether the animation runs forwards (normal), backwards (reverse),
-     * switches direction after each iteration (alternate), or runs
-     * backwards and switches direction after each iteration (alternate-reverse).
-     * Defaults to "normal". */
-    direction::string? =>
-    /* The number of milliseconds each iteration of the animation takes to
-     * complete. Defaults to 0. Although this is technically optional, keep
-     * in mind that your animation will not run if this value is 0. */
+    direction::
+      [ | `normal | `reverse | `alternate | `alternate_reverse [@bs.as "alternate-reverse"]] [@bs.string]? =>
     duration::int? =>
-    /* The rate of the animation's change over time. Accepts
-     * the pre-defined values "linear", "ease", "ease-in", "ease-out",
-     * and "ease-in-out", or a custom "cubic-bezier" value like
-     * "cubic-bezier(0.42, 0, 0.58, 1)". Defaults to "linear". */
-    easing::string? =>
-    /* The number of milliseconds to delay after the end of an animation.
-     * This is primarily of use when sequencing animations based on the
-     * end time of another animation. Defaults to 0. */
+    easing::
+      [ | `linear | `ease | `ease_in | `ease_out | `ease_in_out] [@bs.string]? =>
     endDelay::int? =>
-    /* Dictates whether the animation's effects should be reflected
-     * by the element(s) prior to playing ("backwards"), retained
-     * after the animation has completed playing ("forwards"), or
-     * both. Defaults to "none".*/
-    fill::string? =>
-    /* Describes at what point in the iteration the animation should
-     * start. 0.5 would indicate starting halfway through the first
-     * iteration for example, and with this value set, an animation
-     * with 2 iterations would end halfway through a third iteration.
-     * Defaults to 0.0. */
+    fill::[ | `none | `forwards | `backwards | `both] [@bs.string]? =>
     iterationStart::float? =>
-    /* The number of times the animation should repeat. Defaults to 1,
-     * and can also take a value of Infinity to make it repeat for
-     * as long as the element exists. */
     iterations::int? =>
     unit =>
     keyframeOptions =
     "" [@@bs.obj];
-  let make
-       delay::(delay: int)=0
-       direction::(direction: animationEffectTimingPlaybackDirection)=Normal
-       duration::(duration: int)=0
-       easing::(easing: easingType)=Linear
-       endDelay::(endDelay: int)=0
-       fill::(fill: fillType)=Forwards
-       iterationStart::(iterationStart: float)=0.0
-       iterations::(iterations: int)=1 =>
-     make
-       ::delay
-       direction::(encodeAnimationEffectTimingPlaybackDirection direction)
-       ::duration
-       easing::(encodeEasingType easing)
-       ::endDelay
-       fill::(encodeFillType fill)
-       ::iterationStart
-       ::iterations;
-};
-
-module KeyframeEffectInit = {
-  type t = keyframeEffectInit;
-  external make :
-    element::element? =>
-    /* A keyframe object, or null. */
-    keyframeSet::keyframeObject? =>
-    /* Either an integer representing the animation's
-     * duration (in milliseconds), or an Object. */
-    keyframeOptions::keyframeOptions? =>
-    /* sourceKeyFrames::keyframeEffectInit? => */
-    unit =>
-    keyframeEffectInit =
-    "" [@@bs.obj];
-  /* The DOM element to be animated, or null. */
+  external makeDuration : int => keyframeOptions = "%identity";
 };
 
 /* The KeyframeEffect interface of the Web Animations API lets us
@@ -170,8 +86,17 @@ module KeyframeEffectInit = {
  * These can then be played using the Animation() constructor.*/
 module KeyframeEffect = {
   type t = keyframeEffect;
-  external make : unit => t = "KeyframeEffect" [@@bs.new];
-  external makeWithInit : keyframeEffectInit => t =
+  external make :
+    element::element? =>
+    /* A keyframe object, or null.
+     * NOTE that the objects must match in type - cannot just add properties to
+     * one or the other on an ad-hoc basis else typechecking will fail. */
+    keyframeSet::array (Js.t 'a)? =>
+    /* Either an integer representing the animation's
+     * duration (in milliseconds), or an Object. */
+    keyframeOptions::keyframeOptions? =>
+    unit =>
+    keyframeEffect =
     "KeyframeEffect" [@@bs.new];
 };
 
@@ -192,15 +117,14 @@ module DocumentTimelineInit = {
 
 module DocumentTimeline = {
   type t = documentTimeline;
-  type originTime = float;
   external make : unit => t = "DocumentTimeline" [@@bs.new];
   external makeWithInit : documentTimelineInit => t =
     "DocumentTimeline" [@@bs.new];
   /* Getters */
-  external getOriginTime : t => originTime = "originTime" [@@bs.get];
+  external getOriginTime : t => float = "originTime" [@@bs.get];
   external getCurrentTime : t => float = "currentTime" [@@bs.get];
   /* Setters */
-  external setOriginTime : t => originTime => t = "originTime" [@@bs.send];
+  external setOriginTime : t => float => t = "originTime" [@@bs.send];
   external setCurrentTime : t => float => t = "currentTime" [@@bs.send];
 };
 
@@ -220,7 +144,7 @@ module Animation = {
   external getEffect : t => keyframeEffect = "effect" [@@bs.get];
   external getId : t => string = "id" [@@bs.get];
   external getPlaybackRate : t => int = "playbackRate" [@@bs.get];
-  external getPlayState : t => animationPlayState = "playState" [@@bs.get];
+  external getPlayState : t => playState = "playState" [@@bs.get];
   external getStartTime : t => float = "startTime" [@@bs.get];
   external getTimeline : t => documentTimeline = "timeline" [@@bs.get];
   /* Setters */
@@ -228,8 +152,7 @@ module Animation = {
   external setEffect : t => keyframeEffect => t = "effect" [@@bs.send];
   external setId : t => string => t = "id" [@@bs.send];
   external setPlaybackRate : t => int => t = "playbackRate" [@@bs.send];
-  external setPlayState : t => animationPlayState => t =
-    "playState" [@@bs.send];
+  external setPlayState : t => playState => t = "playState" [@@bs.send];
   external setStartTime : t => float => t = "startTime" [@@bs.send];
   external setTimeline : t => documentTimeline => t = "timeline" [@@bs.send];
   /* Promise-returning getters */

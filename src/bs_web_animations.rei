@@ -1,4 +1,0 @@
-/*
- Currently empty to clear out exports declarations from JS output.
- NOTE this will cause compiler warnings.
-  */
