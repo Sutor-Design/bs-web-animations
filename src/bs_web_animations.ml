@@ -1,10 +1,15 @@
+(* The Web Animations API allows for synchronizing and timing changes to the
+ * presentation of a Web page, i.e. animation of DOM elements. It does so by
+ * combining two models: the Timing Model and the Animation Model.
+ *
+ * The API is in flux, but there is a robust polyfill for the current spec.*)
 type animation
-type document
 type documentTimeline
-type documentTimelineInit
-type element
 type keyframeOptions
 type keyframeEffect
+
+type document = Dom.document
+type element = Dom.element
 
 (* Either an integer representing the animation's duration (in milliseconds),
  * or an Object containing the animation configuration properties. *)
@@ -47,21 +52,13 @@ module KeyframeEffect =
     external setKeyframes : t -> ?keyframeSet:'a Js.t array -> keyframeEffect = "" [@@bs.send]
   end
 
-module DocumentTimelineInit =
-  struct
-    type t = documentTimelineInit
-    external make : ?originTime:int -> unit -> documentTimelineInit = ""
-    [@@bs.obj ]
-  end
-
 (* The DocumentTimeline interface of the the Web Animations API represents animation
  * timelines, including the default document timeline (accessed via Document.timeline). *)
 module DocumentTimeline =
   struct
     type t = documentTimeline
-    external make : unit -> t = "DocumentTimeline" [@@bs.new ]
-    external makeWithInit : documentTimelineInit -> t = "DocumentTimeline"
-    [@@bs.new ]
+    type options = < originTime: int > Js.t
+    external make : ?options:options -> unit -> t = "DocumentTimeline" [@@bs.new ]
     external getOriginTime : t -> float = "originTime" [@@bs.get]
     external getCurrentTime : t -> float = "currentTime" [@@bs.get]
     external setOriginTime : t -> float -> t = "originTime" [@@bs.send]
@@ -73,12 +70,12 @@ module DocumentTimeline =
 module Animation =
   struct
     type t = animation
-    external make : unit -> t = "Animation" [@@bs.new ]
+    external make : ?effect:keyframeEffect -> ?timeline:documentTimeline -> unit -> animation = "Animation" [@@bs.new ]
     external getCurrentTime : t -> int = "currentTime" [@@bs.get]
     external getEffect : t -> keyframeEffect = "effect" [@@bs.get]
     external getId : t -> string = "id" [@@bs.get]
     external getPlaybackRate : t -> int = "playbackRate" [@@bs.get]
-    (* external getPlayState : t -> playState = "playState" [@@bs.get] *)
+    external getPlayState : t -> string = "playState" [@@bs.get]
     external getStartTime : t -> float = "startTime" [@@bs.get]
     external getTimeline : t -> documentTimeline = "timeline" [@@bs.get]
     external setCurrentTime : t -> int -> t = "currentTime" [@@bs.send]
@@ -91,6 +88,7 @@ module Animation =
       | `paused
       | `finished
     ] [@bs.string]) -> t = "playState" [@@bs.send]
+
     external setStartTime : t -> float -> t = "startTime" [@@bs.send]
     external setTimeline : t -> documentTimeline -> t = "timeline" [@@bs.send]
     external cancel : t -> unit -> unit = "cancel" [@@bs.send]
@@ -100,5 +98,8 @@ module Animation =
     external reverse : t -> unit -> unit = "reverse" [@@bs.send]
   end
 
-(* external timeline : documentTimeline = "" [@bs.val] [@bs.scope "document"] *)
-(* external animate : element -> animation -> unit = "" [@bs.send.pipe element] *)
+
+(* The Element interface's animate() method is a shortcut method which creates
+ * a new Animation, applies it to the element, then plays the animation.
+ * It returns the created Animation object instance. *)
+external animate : ?effect:keyframeEffect -> ?timeline:documentTimeline -> element = "" [@@bs.send.pipe : element]

@@ -1,6 +1,6 @@
 {
   "name": "bs-web-animations",
   "sources": ["src"],
-  "bs-dependencies": ["bs-fetch", "bs-webapi"],
+  "bs-dependencies": ["bs-webapi"],
   "bsc-flags": ["-bs-super-errors"]
 }
