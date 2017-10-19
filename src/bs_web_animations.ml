@@ -16,7 +16,9 @@ type element = Dom.element
 module KeyframeOptions =
   struct
     type t = keyframeOptions
-    external makeDuration : int -> keyframeOptions = "%identity"
+    (* FIXME the keyframeEffect `make` should take either the opts object or a duration -
+     * need to add poly types to it - eg | `Duration int | Opts` Js.t *)
+    (* external makeDuration : int -> keyframeOptions = "" [@@bs.val] *)
     external makeObj :
       ?delay:int ->
       ?direction:([
@@ -59,10 +61,10 @@ module DocumentTimeline =
     type t = documentTimeline
     type options = < originTime: int > Js.t
     external make : ?options:options -> unit -> t = "DocumentTimeline" [@@bs.new ]
-    external getOriginTime : t -> float = "originTime" [@@bs.get]
-    external getCurrentTime : t -> float = "currentTime" [@@bs.get]
-    external setOriginTime : t -> float -> t = "originTime" [@@bs.send]
-    external setCurrentTime : t -> float -> t = "currentTime" [@@bs.send]
+    external getOriginTime : t -> int = "originTime" [@@bs.get]
+    external getCurrentTime : t -> int = "currentTime" [@@bs.get]
+    external setOriginTime : t -> int -> t = "originTime" [@@bs.set]
+    external setCurrentTime : t -> int -> t = "currentTime" [@@bs.set]
   end
 
 (* The Animation interface of the Web Animations API represents a single animation player
@@ -70,6 +72,9 @@ module DocumentTimeline =
 module Animation =
   struct
     type t = animation
+    type 'a playbackRate =
+      | Float : float playbackRate
+      | Int : int playbackRate
     external make : ?effect:keyframeEffect -> ?timeline:documentTimeline -> unit -> animation = "Animation" [@@bs.new ]
     external getCurrentTime : t -> int = "currentTime" [@@bs.get]
     external getEffect : t -> keyframeEffect = "effect" [@@bs.get]
@@ -78,19 +83,19 @@ module Animation =
     external getPlayState : t -> string = "playState" [@@bs.get]
     external getStartTime : t -> float = "startTime" [@@bs.get]
     external getTimeline : t -> documentTimeline = "timeline" [@@bs.get]
-    external setCurrentTime : t -> int -> t = "currentTime" [@@bs.send]
-    external setEffect : t -> keyframeEffect -> t = "effect" [@@bs.send]
-    external setId : t -> string -> t = "id" [@@bs.send]
-    external setPlaybackRate : t -> int -> t = "playbackRate" [@@bs.send]
+    external setCurrentTime : t -> int -> t = "currentTime" [@@bs.set]
+    external setEffect : t -> keyframeEffect -> t = "effect" [@@bs.set]
+    external setId : t -> string -> t = "id" [@@bs.set]
+    (* Hmmm. Not 100% on this API, maybe only allow floats? *)
+    external setPlaybackRate : t -> ('a playbackRate [@bs.ignore]) -> 'a -> t = "playbackRate" [@@bs.set]
     external setPlayState : t -> playState:([
       | `pending
       | `running
       | `paused
       | `finished
-    ] [@bs.string]) -> t = "playState" [@@bs.send]
-
-    external setStartTime : t -> float -> t = "startTime" [@@bs.send]
-    external setTimeline : t -> documentTimeline -> t = "timeline" [@@bs.send]
+    ] [@bs.string]) -> t = "playState" [@@bs.set]
+    external setStartTime : t -> float -> t = "startTime" [@@bs.set]
+    external setTimeline : t -> documentTimeline -> t = "timeline" [@@bs.set]
     external cancel : t -> unit -> unit = "cancel" [@@bs.send]
     external finish : t -> unit -> unit = "finish" [@@bs.send]
     external pause : t -> unit -> unit = "pause" [@@bs.send]
@@ -102,4 +107,10 @@ module Animation =
 (* The Element interface's animate() method is a shortcut method which creates
  * a new Animation, applies it to the element, then plays the animation.
  * It returns the created Animation object instance. *)
-external animate : ?effect:keyframeEffect -> ?timeline:documentTimeline -> element = "" [@@bs.send.pipe : element]
+external animate : ?effect:keyframeEffect -> ?timeline:documentTimeline -> unit -> element = "" [@@bs.send.pipe : element]
+
+(* The getAnimations() method of the Document interface returns an array of
+ * all Animation objects currently in effect whose target elements are descendants
+ * of the document. This array includes CSS Animations, CSS Transitions, and
+ * Web Animations. *)
+external getAnimations : unit -> document = "" [@@bs.send.pipe : document]
