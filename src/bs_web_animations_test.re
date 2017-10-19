@@ -129,8 +129,14 @@ Animation.play myAnimation ();
 
 Animation.reverse myAnimation ();
 
+/* Promise-returning methods */
+let readyPromise = Animation.ready myAnimation;
+
+let finishedPromise = Animation.finished myAnimation;
+
 /* `animate` shortcut method */
 let _ = element |> animate ();
+
 let _ = element |> animate effect::keyframeEffect timeline::sharedTimeline ();
 
 let _ = document |> getAnimations ();

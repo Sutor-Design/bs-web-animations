@@ -10,6 +10,7 @@ type keyframeEffect
 
 type document = Dom.document
 type element = Dom.element
+type response
 
 (* Either an integer representing the animation's duration (in milliseconds),
  * or an Object containing the animation configuration properties. *)
@@ -96,6 +97,10 @@ module Animation =
     ] [@bs.string]) -> t = "playState" [@@bs.set]
     external setStartTime : t -> float -> t = "startTime" [@@bs.set]
     external setTimeline : t -> documentTimeline -> t = "timeline" [@@bs.set]
+    (* Promise-returning methods *)
+    external ready : t -> response Js.Promise.t = "ready" [@@bs.val]
+    external finished : t -> response Js.Promise.t = "finished" [@@bs.val]
+    (* *)
     external cancel : t -> unit -> unit = "cancel" [@@bs.send]
     external finish : t -> unit -> unit = "finish" [@@bs.send]
     external pause : t -> unit -> unit = "pause" [@@bs.send]
