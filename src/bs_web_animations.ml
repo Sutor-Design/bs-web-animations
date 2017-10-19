@@ -4,7 +4,7 @@
  *
  * The API is in flux, but there is a robust polyfill for the current spec.*)
 type animation
-type documentTimeline
+type animationTimeline
 type keyframeOptions
 type keyframeEffect
 
@@ -55,17 +55,24 @@ module KeyframeEffect =
     external setKeyframes : t -> ?keyframeSet:'a Js.t array -> keyframeEffect = "" [@@bs.send]
   end
 
+(* IMPORTANT do NOT expose this in the .mli file *)
+module AnimationTimeline =
+  struct
+    type t = animationTimeline
+    external getCurrentTime : t -> int = "currentTime" [@@bs.get]
+    external setCurrentTime : t -> int -> t = "currentTime" [@@bs.set]
+  end
+
+
 (* The DocumentTimeline interface of the the Web Animations API represents animation
  * timelines, including the default document timeline (accessed via Document.timeline). *)
 module DocumentTimeline =
   struct
-    type t = documentTimeline
+    include AnimationTimeline
     type options = < originTime: int > Js.t
     external make : ?options:options -> unit -> t = "DocumentTimeline" [@@bs.new ]
     external getOriginTime : t -> int = "originTime" [@@bs.get]
-    external getCurrentTime : t -> int = "currentTime" [@@bs.get]
     external setOriginTime : t -> int -> t = "originTime" [@@bs.set]
-    external setCurrentTime : t -> int -> t = "currentTime" [@@bs.set]
   end
 
 (* The Animation interface of the Web Animations API represents a single animation player
@@ -76,14 +83,14 @@ module Animation =
     type 'a playbackRate =
       | Float : float playbackRate
       | Int : int playbackRate
-    external make : ?effect:keyframeEffect -> ?timeline:documentTimeline -> unit -> animation = "Animation" [@@bs.new ]
+    external make : ?effect:keyframeEffect -> ?timeline:animationTimeline -> unit -> animation = "Animation" [@@bs.new ]
     external getCurrentTime : t -> int = "currentTime" [@@bs.get]
     external getEffect : t -> keyframeEffect = "effect" [@@bs.get]
     external getId : t -> string = "id" [@@bs.get]
     external getPlaybackRate : t -> int = "playbackRate" [@@bs.get]
     external getPlayState : t -> string = "playState" [@@bs.get]
     external getStartTime : t -> float = "startTime" [@@bs.get]
-    external getTimeline : t -> documentTimeline = "timeline" [@@bs.get]
+    external getTimeline : t -> animationTimeline = "timeline" [@@bs.get]
     external setCurrentTime : t -> int -> t = "currentTime" [@@bs.set]
     external setEffect : t -> keyframeEffect -> t = "effect" [@@bs.set]
     external setId : t -> string -> t = "id" [@@bs.set]
@@ -96,7 +103,7 @@ module Animation =
       | `finished
     ] [@bs.string]) -> t = "playState" [@@bs.set]
     external setStartTime : t -> float -> t = "startTime" [@@bs.set]
-    external setTimeline : t -> documentTimeline -> t = "timeline" [@@bs.set]
+    external setTimeline : t -> animationTimeline -> t = "timeline" [@@bs.set]
     (* Promise-returning methods *)
     external ready : t -> response Js.Promise.t = "ready" [@@bs.val]
     external finished : t -> response Js.Promise.t = "finished" [@@bs.val]
@@ -112,7 +119,7 @@ module Animation =
 (* The Element interface's animate() method is a shortcut method which creates
  * a new Animation, applies it to the element, then plays the animation.
  * It returns the created Animation object instance. *)
-external animate : ?effect:keyframeEffect -> ?timeline:documentTimeline -> unit -> element = "" [@@bs.send.pipe : element]
+external animate : ?effect:keyframeEffect -> ?timeline:animationTimeline -> unit -> element = "" [@@bs.send.pipe : element]
 
 (* The getAnimations() method of the Document interface returns an array of
  * all Animation objects currently in effect whose target elements are descendants
