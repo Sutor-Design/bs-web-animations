@@ -105,8 +105,8 @@ module Animation =
     external setStartTime : t -> float -> t = "startTime" [@@bs.set]
     external setTimeline : t -> animationTimeline -> t = "timeline" [@@bs.set]
     (* Promise-returning methods *)
-    external ready : t -> response Js.Promise.t = "ready" [@@bs.val]
-    external finished : t -> response Js.Promise.t = "finished" [@@bs.val]
+    external ready : t -> response Js.Promise.t = "ready" [@@bs.get]
+    external finished : t -> response Js.Promise.t = "finished" [@@bs.get]
     (* *)
     external cancel : t -> unit -> unit = "cancel" [@@bs.send]
     external finish : t -> unit -> unit = "finish" [@@bs.send]
