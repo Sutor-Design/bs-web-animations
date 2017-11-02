@@ -1,6 +1,9 @@
 {
   "name": "bs-web-animations",
+  "version": "0.1.0",
   "sources": ["src"],
   "bs-dependencies": ["bs-webapi"],
-  "bsc-flags": ["-bs-super-errors"]
+  "bsc-flags": ["-bs-super-errors"],
+  "package-specs": ["es6-global"],
+  "js-post-build": "rm demo/demo.js && cp lib/js/src/bs_web_animations_demo.js demo/demo.js"
 }

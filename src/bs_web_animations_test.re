@@ -38,6 +38,27 @@ let kfOpts =
     fill::`forwards
     ();
 
+/* Test equations */
+let easeInSineOpts =
+  KeyframeOptions.makeObj
+    delay::0
+    direction::`normal
+    duration::1000
+    easing::`ease_in_sine
+    endDelay::0
+    fill::`forwards
+    ();
+
+let easeInOutCircOpts =
+  KeyframeOptions.makeObj
+    delay::0
+    direction::`normal
+    duration::1000
+    easing::`ease_in_out_circ
+    endDelay::0
+    fill::`forwards
+    ();
+
 let _ =
   KeyframeEffect.make
     ::element

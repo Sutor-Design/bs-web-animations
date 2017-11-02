@@ -28,12 +28,38 @@ module KeyframeOptions =
         | `alternate
         | `alternate_reverse [@bs.as "alternate-revese"] ] [@bs.string ]) ->
       ?duration:int ->
+      (* NOTE to avoid the dance needed to input cubic beziers as floats,
+       * I have just defined all of the Penner equations for now. *)
       ?easing:([
         | `linear
         | `ease
         | `ease_in [@bs.as "ease-in"]
         | `ease_out [@bs.as "ease-out"]
-        | `ease_in_out [@bs.as "ease-in-out" ] ] [@bs.string ]) ->
+        | `ease_in_out [@bs.as "ease-in-out" ]
+        | `ease_in_sine [@bs.as "cubic-bezier(0.47, 0, 0.745, 0.715)"]
+        | `ease_out_sine [@bs.as "cubic-bezier(0.39, 0.575, 0.565, 1)"]
+        | `ease_in_out_sine [@bs.as "cubic-bezier(0.445, 0.05, 0.55, 0.95)"]
+        | `ease_in_quad [@bs.as "cubic-bezier(0.55, 0.085, 0.68, 0.53)"]
+        | `ease_out_quad [@bs.as "cubic-bezier(0.25, 0.46, 0.45, 0.94)"]
+        | `ease_in_out_quad [@bs.as "cubic-bezier(0.455, 0.03, 0.515, 0.955)"]
+        | `ease_in_cubic [@bs.as "cubic-bezier(0.55, 0.055, 0.675, 0.19)"]
+        | `ease_out_cubic [@bs.as "cubic-bezier(0.215, 0.61, 0.355, 1)"]
+        | `ease_in_out_cubic [@bs.as "cubic-bezier(0.645, 0.045, 0.355, 1)"]
+        | `ease_in_quart [@bs.as "cubic-bezier(0.895, 0.03, 0.685, 0.22)"]
+        | `ease_out_quart [@bs.as "cubic-bezier(0.165, 0.84, 0.44, 1)"]
+        | `ease_in_out_quart [@bs.as "cubic-bezier(0.77, 0, 0.175, 1)"]
+        | `ease_in_quint [@bs.as "cubic-bezier(0.755, 0.05, 0.855, 0.06)"]
+        | `ease_out_quint [@bs.as "cubic-bezier(0.23, 1, 0.32, 1)"]
+        | `ease_in_out_quint [@bs.as "cubic-bezier(0.86, 0, 0.07, 1)"]
+        | `ease_in_expo [@bs.as "cubic-bezier(0.95, 0.05, 0.795, 0.035)"]
+        | `ease_out_expo [@bs.as "cubic-bezier(0.19, 1, 0.22, 1)"]
+        | `ease_in_out_expo [@bs.as "cubic-bezier(1, 0, 0, 1)"]
+        | `ease_in_circ [@bs.as "cubic-bezier(0.6, 0.04, 0.98, 0.335)"]
+        | `ease_out_circ [@bs.as "cubic-bezier(0.075, 0.82, 0.165, 1)"]
+        | `ease_in_out_circ [@bs.as "cubic-bezier(0.785, 0.135, 0.15, 0.86)"]
+        | `ease_in_back [@bs.as "cubic-bezier(0.6, -0.28, 0.735, 0.045)"]
+        | `ease_out_back [@bs.as "cubic-bezier(0.175, 0.885, 0.32, 1.275)"]
+        | `ease_in_out_back [@bs.as "cubic-bezier(0.68, -0.55, 0.265, 1.55)"] ] [@bs.string ]) ->
       ?endDelay:int ->
       ?fill:(([ `none  | `forwards  | `backwards  | `both ]) [@bs.string ]) ->
       ?iterationStart:float ->
@@ -83,7 +109,9 @@ module Animation =
     type 'a playbackRate =
       | Float : float playbackRate
       | Int : int playbackRate
+    (* Core Animation constructor: *)
     external make : ?effect:keyframeEffect -> ?timeline:animationTimeline -> unit -> animation = "Animation" [@@bs.new ]
+    (* Getters/setters: *)
     external getCurrentTime : t -> int = "currentTime" [@@bs.get]
     external getEffect : t -> keyframeEffect = "effect" [@@bs.get]
     external getId : t -> string = "id" [@@bs.get]
@@ -94,7 +122,7 @@ module Animation =
     external setCurrentTime : t -> int -> t = "currentTime" [@@bs.set]
     external setEffect : t -> keyframeEffect -> t = "effect" [@@bs.set]
     external setId : t -> string -> t = "id" [@@bs.set]
-    (* Hmmm. Not 100% on this API, maybe only allow floats? *)
+    (* REVIEW Not 100% on this API, maybe only allow floats? *)
     external setPlaybackRate : t -> ('a playbackRate [@bs.ignore]) -> 'a -> t = "playbackRate" [@@bs.set]
     external setPlayState : t -> playState:([
       | `pending
@@ -104,10 +132,10 @@ module Animation =
     ] [@bs.string]) -> t = "playState" [@@bs.set]
     external setStartTime : t -> float -> t = "startTime" [@@bs.set]
     external setTimeline : t -> animationTimeline -> t = "timeline" [@@bs.set]
-    (* Promise-returning methods *)
+    (* Promise-returning methods: *)
     external ready : t -> response Js.Promise.t = "ready" [@@bs.get]
     external finished : t -> response Js.Promise.t = "finished" [@@bs.get]
-    (* *)
+    (* Animation control methods: *)
     external cancel : t -> unit -> unit = "cancel" [@@bs.send]
     external finish : t -> unit -> unit = "finish" [@@bs.send]
     external pause : t -> unit -> unit = "pause" [@@bs.send]

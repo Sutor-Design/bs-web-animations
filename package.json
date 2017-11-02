@@ -4,14 +4,15 @@
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
-    "start": "bsb -make-world -w"
+    "start": "bsb -make-world -w",
+    "build-demo": "npm run build && rm demo/demo.js && cp lib/js/src/bs_web_animations_demo.js demo/demo.js"
   },
   "keywords": [
     "BuckleScript"
   ],
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^1.9.2",
+    "bs-platform": "^1.10.3",
     "bs-webapi": "^0.7.0"
   },
   "dependencies": {}
