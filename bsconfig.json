@@ -5,5 +5,5 @@
   "bs-dependencies": ["bs-webapi"],
   "bsc-flags": ["-bs-super-errors"],
   "package-specs": ["es6-global"],
-  "js-post-build": "rm demo/demo.js && cp lib/js/src/bs_web_animations_demo.js demo/demo.js"
+  "refmt": 3
 }

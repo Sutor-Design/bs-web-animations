@@ -79,15 +79,25 @@ textarea {
 }
 
 body {
-  color: var(--base);
-  font-family: monospace;
-}
-
-.demo-wrapper {
-  min-height: 4rem;
-}
-
-.demo-wrapper:nth-child(odd) {
   background-color: var(--base);
-  color: var(--background);
+  color: var(--basefaded);
+  font-family: monospace;
+  font-weight: 200;
+}
+
+.site-header,
+.demo {
+  padding: .5rem;
+  border-bottom: 1px solid currentColor;
+}
+
+.demo {
+}
+
+.demo-active {
+  background-color: var(--reasonbase);
+}
+
+.demo-content {
+  height: 8rem;
 }

@@ -7,18 +7,25 @@
   <title>Bucklescript bindings to the Web Animations API</title>
   <link rel="stylesheet" href="./demo.css">
   <!-- Polyfill for the web animations API -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations.min.js" defer></script>
-  <!-- BuckleScript demo JS -->
-  <script src="demo.js" defer></script>
+  <script src="./web-animations.min.js"></script>
+  <!-- BuckleScript demo JS (NOTE This file must be manually edited to remove `exports`) -->
+  <script src="../lib/es6_global/src/WebAnimationsDemo.js" type="module"></script>
 </head>
 <body>
-  <header>
+  <header class="site-header">
     <h1>BuckleScript bindings to the Web Animations API (WAAPI)</h1>
   </header>
-  <main>
-    <figure class="demo demo1" id="demo1">
-      <div class="demo-visual">
+  <main class="demos">
+    <figure class="demo demo-active" id="demo1">
+      <h1 class="demo-title">Single node</h1>
+      <div class="demo-content">
+      </div>
+      <!-- <div class="demo-code"></div> -->
+    </figure>
 
+    <figure class="demo" id="demo2">
+      <h1 class="demo-title">Multiple nodes</h1>
+      <div class="demo-content">
       </div>
       <!-- <div class="demo-code"></div> -->
     </figure>
